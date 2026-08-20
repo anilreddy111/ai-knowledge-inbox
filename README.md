@@ -20,42 +20,34 @@ A minimal AI-powered knowledge inbox that allows users to save notes or URLs and
 ## Architecture
 
 ```text
-                    React + TypeScript
-                           |
-                           | HTTP
-                           v
-                    Express Backend
-                           |
-             +-------------+-------------+
-             |                           |
-          /ingest                      /query
-             |                           |
-             v                           v
-      Content Processing          Query Embedding
-             |                           |
-       +-----+-----+                     v
-       |           |              Similarity Search
-      Note         URL                    |
-                   |                      v
-                Cheerio              Top-K Chunks
-       |           |                      |
-       +-----+-----+                      v
-             |                       Gemini LLM
-             v                           |
-          Chunking                       v
-             |                      Answer + Sources
-             v
-       Gemini Embeddings
-             |
-             v
-           SQLite
-
-       Gemini Embeddings
-             |
-             v
-           SQLite
+React + TypeScript
+        |
+        | HTTP
+        v
+Express Backend
+        |
+   +----+----+
+   |         |
+ /ingest   /query
+   |         |
+   v         v
+Content    Query
+Processing Embedding
+   |         |
+   v         v
+Chunking  Similarity Search
+   |         |
+   v         v
+Gemini    Top-K Chunks
+Embeddings   |
+   |         v
+   |      Gemini LLM
+   |         |
+   +---------+
+        |
+        v
+      SQLite
 ```
-
 
 ## RAG Pipeline
 
@@ -93,7 +85,7 @@ Return answer + source snippets
 
 ### Backend
 
-- Node.js
+- Node.js 20+
 - Express
 - SQLite
 - better-sqlite3
@@ -110,11 +102,41 @@ Return answer + source snippets
 - Vite
 - React Markdown
 
+## Project Structure
+
+```text
+ai-knowledge-inbox/
+│
+├── backend/
+│   ├── src/
+│   │   ├── config/
+│   │   ├── controllers/
+│   │   ├── db/
+│   │   ├── errors/
+│   │   ├── middleware/
+│   │   ├── repositories/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── utils/
+│   │   └── validation/
+│   ├── package.json
+│   └── .env.example
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   └── services/
+│   └── package.json
+│
+├── .gitignore
+└── README.md
+```
+
 ## Running Locally
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20+
 - Gemini API key
 
 ### Backend
@@ -178,6 +200,8 @@ Save a URL:
   "url": "https://example.com"
 }
 ```
+
+For URLs, the backend fetches the page and extracts readable content server-side.
 
 ### GET `/items`
 
